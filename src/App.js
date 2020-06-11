@@ -130,10 +130,10 @@ import './style.css';
             </DialogContent>
             <DialogActions>
             <Button onClick={closeModal} color="primary">
-                Cancelar
+                Cancelado
             </Button>
             <Button onClick={addGarrafa} color="primary">
-                Salvar
+                Salvo
             </Button>
             </DialogActions>
         </Dialog>   
