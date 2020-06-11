@@ -4,6 +4,7 @@ import Header from './header';
 import { 
     Container, 
     Table, 
+    TableHead,
     TableRow, 
     TableCell, 
     Dialog, 
@@ -12,7 +13,8 @@ import {
     DialogContent,
     DialogContentText,
     TextField,
-    DialogActions } from '@material-ui/core';
+    DialogActions, 
+    TableBody} from '@material-ui/core';
 import './style.css';
 
     function App() {
@@ -58,8 +60,19 @@ import './style.css';
     return (
         <>
         <Header/>
-        <Container>
+        <Container maxWidth="lg" className="container">
             <Table>
+                <TableHead>
+                    <TableRow>
+                        <TableCell>ID</TableCell>
+                        <TableCell>Nome</TableCell>
+                        <TableCell>Tipo</TableCell>
+                        <TableCell>Classificação</TableCell>
+                        <TableCell>Safra</TableCell>
+                        <TableCell>Apagar</TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
                 {vinhos.map(item => ( 
                     <TableRow key={item.id}>
                         <TableCell>{item.id}</TableCell>
@@ -72,6 +85,7 @@ import './style.css';
                         </TableCell>
                     </TableRow> 
                 ))} 
+            </TableBody>
             </Table>
             <Button
                 onClick={openModal}
@@ -130,7 +144,7 @@ import './style.css';
             </DialogContent>
             <DialogActions>
             <Button onClick={closeModal} color="primary">
-                Cancelado
+                Cancelar
             </Button>
             <Button onClick={addGarrafa} color="primary">
                 Salvar
