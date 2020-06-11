@@ -133,7 +133,7 @@ import './style.css';
                 Cancelado
             </Button>
             <Button onClick={addGarrafa} color="primary">
-                Salvo
+                Salvar
             </Button>
             </DialogActions>
         </Dialog>   
