@@ -1,30 +1,51 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import api from './api';
+import Button from '@material-ui/core/Button';
+
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableRow from '@material-ui/core/TableRow';
+import CircularProgress from '@material-ui/core/CircularProgress'
 
 function App() {
 
   const [vinhos, setVinhos] = useState([]);
+  const [ loading, setLoading ] = useState(true);
 
+    // executa para obter informações externas.
+    // "executado uma única vez".
     useEffect(() => {
         api.get('/vinho').then((response) => {
             const itens = response.data;
             setVinhos(itens);
+            setLoading(false);
         })
     }, [])
 
-
   return (
-      <table>
+    <div style={{marginTop: '80px'}}>
+      { loading ? <CircularProgress /> : <div/> } 
+      <Table>
+          <TableBody>
           {vinhos.map(item => (
-                <tr key={item.id}>
-                    <td>{item.id}</td>
-                    <td>{item.nome}</td>
-                    <td>{item.tipo}</td>
-                    <td>{item.classificacao}</td>
-                    <td>{item.safra}</td>
-                </tr>         
+                <TableRow key={item.id}>
+                    <TableCell>{item.id}</TableCell>
+                    <TableCell>{item.nome}</TableCell>
+                    <TableCell>{item.tipo}</TableCell>
+                    <TableCell>{item.classificacao}</TableCell>
+                    <TableCell>{item.safra}</TableCell>
+                </TableRow>         
           ))}
-      </table>
+          </TableBody>
+      </Table>
+      <br/>
+      {/* <Link to="/create">Adicionar</Link> */}
+      <Button variant="contained" color="primary">
+            Primary
+      </Button>
+    </div>
   );
 
 }
