@@ -1,52 +1,144 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import api from './api';
-import Button from '@material-ui/core/Button';
+import Header from './header';
+import { 
+    Container, 
+    Table, 
+    TableRow, 
+    TableCell, 
+    Dialog, 
+    Button, 
+    DialogTitle,
+    DialogContent,
+    DialogContentText,
+    TextField,
+    DialogActions } from '@material-ui/core';
+import './style.css';
 
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
-import CircularProgress from '@material-ui/core/CircularProgress'
+    function App() {
+        const [ vinhos, setVinhos ] = useState([]);
+        const [ open, setOpen ] = useState(false);
+        const [ nome, setNome ] = useState('');
+        const [ tipo, setTipo ] = useState('');
+        const [ classificacao, setClassificacao ] = useState('');
+        const [ safra, setSafra ] = useState('');
 
-function App() {
+    function loadData() { 
+        api.get('/vinho').then((response) => { 
+        const itens = response.data;
+        setVinhos(itens);
+        });
+    }
+    
+    useEffect(() => loadData(), [])
 
-  const [vinhos, setVinhos] = useState([]);
-  const [ loading, setLoading ] = useState(true);
+    const openModal = () => setOpen(true);
 
-    // executa para obter informações externas.
-    // "executado uma única vez".
-    useEffect(() => {
-        api.get('/vinho').then((response) => {
-            const itens = response.data;
-            setVinhos(itens);
-            setLoading(false);
+    const closeModal = () => setOpen(false);
+
+    //Função para adicionar uma garrafa.
+    function addGarrafa() {
+        api.post('/vinho', {nome: nome, tipo: tipo, classificacao: classificacao, safra: safra}).then((response) => {
+        setNome('');
+        setTipo('');
+        setClassificacao('');
+        setSafra('');
+        setOpen(false);
+        loadData();
         })
-    }, [])
+    }
 
-  return (
-    <div style={{marginTop: '80px'}}>
-      { loading ? <CircularProgress /> : <div/> } 
-      <Table>
-          <TableBody>
-          {vinhos.map(item => (
-                <TableRow key={item.id}>
-                    <TableCell>{item.id}</TableCell>
-                    <TableCell>{item.nome}</TableCell>
-                    <TableCell>{item.tipo}</TableCell>
-                    <TableCell>{item.classificacao}</TableCell>
-                    <TableCell>{item.safra}</TableCell>
-                </TableRow>         
-          ))}
-          </TableBody>
-      </Table>
-      <br/>
-      {/* <Link to="/create">Adicionar</Link> */}
-      <Button variant="contained" color="primary">
-            Primary
-      </Button>
-    </div>
-  );
+    //Função para apagar uma garrafa
+     function deleteGarrafa(id) {
+        api.delete(`/vinho/${id}`).then((response) => { 
+        loadData()
+        })
+     }
+
+    return (
+        <>
+        <Header/>
+        <Container>
+            <Table>
+                {vinhos.map(item => ( 
+                    <TableRow key={item.id}>
+                        <TableCell>{item.id}</TableCell>
+                        <TableCell>{item.nome}</TableCell>
+                        <TableCell>{item.tipo}</TableCell>
+                        <TableCell>{item.classificacao}</TableCell>
+                        <TableCell>{item.safra}</TableCell>
+                        <TableCell>
+                            <Button variant="outlined" size="small" color="secondary"onClick={() => deleteGarrafa(item.id)}>Apagar</Button>
+                        </TableCell>
+                    </TableRow> 
+                ))} 
+            </Table>
+            <Button
+                onClick={openModal}
+                variant="contained" 
+                color="primary" 
+                style={{marginTop: '20px'}}>
+                Adicionar
+             </Button>
+        </Container>
+        <Dialog open={open} onClose={closeModal} fullWidth={true} maxWidth="sm">
+            <DialogTitle id="form-dialog.title">Adicionar Garrafa</DialogTitle>
+            <DialogContent>
+            <DialogContentText>
+                Digite as informações referentes ao vinho.
+            </DialogContentText>
+            <TextField
+                autoFocus
+                margin="dense"
+                id="nome"
+                label="Nome"
+                type="Text"
+                fullWidth
+                value={nome}
+                onChange={e =>setNome(e.target.value)}
+            />
+            <TextField
+                autoFocus
+                margin="dense"
+                id="tipo"
+                label="Tipo"
+                type="Text"
+                fullWidth
+                value={tipo}
+                onChange={e =>setTipo(e.target.value)}
+            />
+            <TextField
+                autoFocus
+                margin="dense"
+                id="classificacao"
+                label="Classificação"
+                type="Text"
+                fullWidth
+                value={classificacao}
+                onChange={e =>setClassificacao(e.target.value)}
+            />
+            <TextField
+                autoFocus
+                margin="dense"
+                id="safra"
+                label="Safra"
+                type="int"
+                fullWidth
+                value={safra}
+                onChange={e =>setSafra(e.target.value)}
+            />
+            </DialogContent>
+            <DialogActions>
+            <Button onClick={closeModal} color="primary">
+                Cancelar
+            </Button>
+            <Button onClick={addGarrafa} color="primary">
+                Salvar
+            </Button>
+            </DialogActions>
+        </Dialog>   
+        </>
+        );
 
 }
 export default App;

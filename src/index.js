@@ -1,29 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import App from './App';
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import purple from '@material-ui/core/colors/purple';
+// import amber from '@material-ui/core/colors/amber';
 
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
+const theme = createMuiTheme({
+  palette: {
+    primary: purple,
+    // secondary: amber,
+  },  
+});
 
 ReactDOM.render(
-<BrowserRouter>
-    <AppBar position="fixed">
-        <Toolbar>
-            <Typography variant="h6" >
-                 Vinhos
-            </Typography>
-        </Toolbar>
-    </AppBar>
-    <Switch>
-        <Route path="/" exact>
-            <App/>
-        </Route>
-        <Route path="/create">
-            <h1>Cadastro</h1>
-        </Route>
-    </Switch>
-</BrowserRouter>
-
+    <ThemeProvider theme={theme}>
+        <App />
+    </ThemeProvider>
 , document.getElementById('root'));
