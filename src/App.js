@@ -116,7 +116,7 @@ import './style.css';
                         <TableCell>Tipo</TableCell>
                         <TableCell>Classificação</TableCell>
                         <TableCell>Safra</TableCell>
-                        <TableCell>Editar/Apagar</TableCell>
+                        <TableCell>Editar / Apagar</TableCell>
                     
                     </TableRow>
                 </TableHead>
