@@ -18,25 +18,46 @@ import {
 import './style.css';
 
     function App() {
-        const [ vinhos, setVinhos ] = useState([]);
+        const [ lista, setLista ] = useState([]);
         const [ open, setOpen ] = useState(false);
         const [ nome, setNome ] = useState('');
         const [ tipo, setTipo ] = useState('');
         const [ classificacao, setClassificacao ] = useState('');
         const [ safra, setSafra ] = useState('');
+        const [ id, setId ] = useState('');
+        const [ botaoEditar, setBotaoEditar ] = useState(false);
+        const [ botaoAdicionar, setBotaoAdicionar ] = useState(false);
+        
 
-    function loadData() { 
-        api.get('/vinho').then((response) => { 
-        const itens = response.data;
-        setVinhos(itens);
+    function openModal() {
+        setBotaoAdicionar(true);
+        setBotaoEditar(false);
+        setNome('');
+        setTipo('');
+        setClassificacao('');
+        setSafra('');
+        setId('');
+        setOpen(true);
+    };
+
+    function closeModal() {
+        setOpen(false);
+    };
+
+    function listaVinho(){
+         api.get('/vinho').then((response) => {
+            const itens = response.data;
+            setLista(itens);
+                setNome('');
+                setTipo('');
+                setClassificacao('');
+                setSafra('');
+                setId('');
         });
-    }
-    
-    useEffect(() => loadData(), [])
-
-    const openModal = () => setOpen(true);
-
-    const closeModal = () => setOpen(false);
+    };
+    useEffect(() => {
+        listaVinho();
+    }, []);
 
     //Função para adicionar uma garrafa.
     function addGarrafa() {
@@ -45,17 +66,43 @@ import './style.css';
         setTipo('');
         setClassificacao('');
         setSafra('');
+        setId('');
         setOpen(false);
-        loadData();
+        listaVinho();
         })
     }
 
     //Função para apagar uma garrafa
      function deleteGarrafa(id) {
         api.delete(`/vinho/${id}`).then((response) => { 
-        loadData()
+        listaVinho()
         })
      }
+
+     //Função para editar uma garrafa
+    function openEditar(id,nome,tipo,classificacao,safra){
+        setBotaoAdicionar(true);
+        setBotaoEditar(true);
+        setNome(nome);
+        setTipo(tipo);
+        setClassificacao(classificacao);
+        setSafra(safra);
+        setId(id);
+        setOpen(true);
+
+      };
+
+      function editarGarrafa(){
+        api.put(`/vinho/${id}`,{nome: nome, tipo: tipo, classificacao: classificacao, safra: safra}).then((response) => {
+            setOpen(false);
+            setNome('');
+            setTipo('');
+            setClassificacao('');
+            setSafra('');
+            setId('');
+            listaVinho();
+        });
+    };
 
     return (
         <>
@@ -69,11 +116,12 @@ import './style.css';
                         <TableCell>Tipo</TableCell>
                         <TableCell>Classificação</TableCell>
                         <TableCell>Safra</TableCell>
-                        <TableCell>Apagar</TableCell>
+                        <TableCell>Editar/Apagar</TableCell>
+                    
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                {vinhos.map(item => ( 
+                {lista.map(item => ( 
                     <TableRow key={item.id}>
                         <TableCell>{item.id}</TableCell>
                         <TableCell>{item.nome}</TableCell>
@@ -81,6 +129,9 @@ import './style.css';
                         <TableCell>{item.classificacao}</TableCell>
                         <TableCell>{item.safra}</TableCell>
                         <TableCell>
+                            &nbsp;
+                            <Button variant="outlined" size="small" color="primary" onClick={() => openEditar(item.id,item.nome, item.tipo, item.classificacao, item.safra)}>Editar</Button>
+                            &nbsp;
                             <Button variant="outlined" size="small" color="secondary"onClick={() => deleteGarrafa(item.id)}>Apagar</Button>
                         </TableCell>
                     </TableRow> 
@@ -146,7 +197,7 @@ import './style.css';
             <Button onClick={closeModal} color="primary">
                 Cancelar
             </Button>
-            <Button onClick={addGarrafa} color="primary">
+            <Button onClick={botaoEditar ? editarGarrafa : addGarrafa} color="primary">
                 Salvar
             </Button>
             </DialogActions>
